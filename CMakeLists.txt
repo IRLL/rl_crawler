@@ -122,3 +122,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+#############
+## Arduino ##
+#############
+rosserial_generate_ros_lib(
+  PACKAGE rosserial_arduino
+  SCRIPT make_libraries.py
+)
+
+rosserial_configure_client(
+  DIRECTORY firmware
+TOOLCHAIN_FILE ${ROSSERIAL_ARDUINO_TOOLCHAIN}
+)
+
+rosserial_add_client_target(firmware example ALL)
+rosserial_add_client_target(firmware example-upload)
+
