@@ -29,9 +29,14 @@ class State(object):
     # get the unique id of the state
     def getStateId(self):
         pass
+	
+	# get the list of features that make up the state
+	def getStateFeatures(self):
+		pass
 
     # get the number of unique states
-    def getNumStates(self):
+	# -1 is infinity
+    def getNumStates():
         pass
 
     # convert state to ServoState object
@@ -49,8 +54,12 @@ class RawState(State):
         light = self.farServo
 
         return weighty + light
+	
+	def getStateFeatures(self):
+		# TODO output state feature list
+		pass
 
-    def getNumStates(self):
+    def getNumStates():
         return NUM_SERVO_TICKS * NUM_SERVO_TICKS
 
     def convertToServoState(self):

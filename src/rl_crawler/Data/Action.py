@@ -28,8 +28,12 @@ class Action(object):
         pass
 
     # get the number of unique action
-    def getNumActions(self):
+    def getNumActions():
         pass
+
+	# get the list of possible actions
+	def getPossibleActions():
+		pass
 
     # convert state to ServoAction object
     def convertToServoAction(self):
