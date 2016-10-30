@@ -1,4 +1,12 @@
 
+import time
+
+from RobotInterface import RobotInterface
+
+from Data.State import RawState as State
+from Data.Action import SimpleDisplacementAction as Action
+
+
 
 """
 	Class representing the interface between the curl bot and its environment.
@@ -8,9 +16,9 @@
 """
 class CurlBotEnvironment(object):
 	class StepResult(object):
-		def __init__(self):
-			self.reward = 0
-			self.sensation = 0
+		def __init__(self, reward = 0, sensation = State()):
+			self.reward = reward
+			self.sensation = sensation
 
 	"""
 		initializes the environment.
@@ -18,8 +26,11 @@ class CurlBotEnvironment(object):
 		Normally only called when the simulation is first initialized.
 	"""
 	def __init__(self, arguments):
-		# tell the curl bot to go back to it's starting position
-		pass
+		# initialize robot
+		self.robot = RobotInterface()
+
+		self.currentState = 0
+
 
 	"""
 		performs initialization of the environment for the beginning of a new trial. 
@@ -29,8 +40,8 @@ class CurlBotEnvironment(object):
 	"""
 	@classmethod
 	def StartTrial(self):
-		# get the first set of state information from the robot
-		pass
+		# reset the robot
+		self.robot.reInitialize()
 	
 	"""
 		performs a single step of the environment simulation.
@@ -44,6 +55,18 @@ class CurlBotEnvironment(object):
 	"""
 	def Step(self, action):
 		# send action to robot
+		servoAction = action.convertToServoAction()
+		self.robot.setServoState(servoAction)
 
-		# get next state from robot
-		pass
+		# wait a bit
+		time.sleep(0.5)
+
+		# get next state and reward from robot
+		nextState = self.robot.getCurrentState()
+		nextReward = self.robot.getNextReward()
+
+		stepResult = StepResult(nextReward, nextState)
+
+		return stepResult
+
+

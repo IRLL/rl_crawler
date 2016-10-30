@@ -35,9 +35,8 @@ from Data.Action import SimpleDisplacementAction as Action
 class RobotInterface(object):
     # initialize robot interface
     def __init__(self):
-        # initialize internal state
-        startingServoState = ServoState(0, 0)
-        self.__state = State(startingServoState)
+        # initialize default state
+        self.startingServoState = ServoState(0, 0)
 
         # initialize starting distance
         self.distanceInitialzed = False
@@ -47,15 +46,25 @@ class RobotInterface(object):
         self.action_publisher = rospy.Publisher('command', action_msg, queue_size=1)
 
         # set both servos to zero position
-        startingActionMessage = action_msg(startingServoState.convertToServoAction())
-        self.action_publisher.publish(startingActionMessage)
+		self.reInitialize()
+
         # TODO ensure that action message can actually take a servoAction as a constructor argument
 
+	# re initialize the robot to starting state values
+	def reInitialize(self):
+		self.setServoState(self.startingServoState)
 
     # get current state
     def getCurrentState(self):
         # output last state given to the servos
         return self.__state
+
+	def setState(self, state):
+		self.setServoState(state.convertToServoAction())
+	
+	def setServoState(self, servoState):
+		self.__postDesiredState(servoState)
+		self.__state = state
 
     # returns the change in distance from the wall since the last call to getNextReward
     def getNextReward(self):
