@@ -51,8 +51,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  action.msg
-  state.msg
+  command.msg
+  distance.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -135,6 +135,6 @@ rosserial_configure_client(
 TOOLCHAIN_FILE ${ROSSERIAL_ARDUINO_TOOLCHAIN}
 )
 
-rosserial_add_client_target(firmware example ALL)
-rosserial_add_client_target(firmware example-upload)
+rosserial_add_client_target(firmware curlbot ALL)
+rosserial_add_client_target(firmware curlbot-upload)
 

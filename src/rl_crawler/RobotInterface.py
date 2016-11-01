@@ -21,8 +21,8 @@
 
 
 import rospy
-from rl_crawler.msg import distanceMsg as distance_msg
-from rl_crawler.msg import actionMsg as action_msg
+from rl_crawler.msg import distance as distance_msg
+from rl_crawler.msg import command as command_msg
 
 
 from Data.State import ServoState
@@ -43,7 +43,7 @@ class RobotInterface(object):
 
         # setup ross publishing and subscription
         self.sensor_subscriber = rospy.Subscriber('distance', distance_msg, self.updateDistance)
-        self.action_publisher = rospy.Publisher('command', action_msg, queue_size=1)
+        self.action_publisher = rospy.Publisher('command', command_msg, queue_size=1)
 
         # set both servos to zero position
 		self.reInitialize()
@@ -86,7 +86,10 @@ class RobotInterface(object):
 
     # tells the robot to move its servos to the given position
     def __postDesiredState(self, servoAction):
-        actionMessage = action_msg(servoAction)
+		actionMessage = command_msg()
+		actionMessage.arm1Pos = servoAction.nearServo;
+		actionMessage.arm2Pos = servoAction.farServo;
+
         self.action_publisher.publish(actionMessage)
 
     # callback for the sensor subscriber, updates the current distance 

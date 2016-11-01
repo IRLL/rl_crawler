@@ -42,6 +42,9 @@ class CurlBotEnvironment(object):
 	def StartTrial(self):
 		# reset the robot
 		self.robot.reInitialize()
+		startingState = self.robot.getCurrentState()
+
+		return startingState
 	
 	"""
 		performs a single step of the environment simulation.
