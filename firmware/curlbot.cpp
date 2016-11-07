@@ -11,6 +11,8 @@
 #define NEAR_SERVO_PIN 1
 #define FAR_SERVO_PIN 2
 
+#define ULTRASONIC_PIN 7
+
 
 ros::NodeHandle nh;
 rl_crawler::command command;
@@ -44,8 +46,6 @@ void setup()
 	// setup servos
 	arm1.attach(NEAR_SERVO_PIN);
 	arm2.attach(FAR_SERVO_PIN);
-
-	// setup ultrasonic
 
 	// setup arduino serial
 	Serial.begin(10000); // setup communications with computer at a 10 kb/sec bitrate
