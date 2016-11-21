@@ -1,3 +1,6 @@
+
+
+
 #include <ros.h>
 #include <rl_crawler/command.h>
 #include <rl_crawler/distance.h>
@@ -5,13 +8,14 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-// TODO include Arduino servo.h somehow
+#include <libraries/NewPing.h>
 
 
 #define NEAR_SERVO_PIN 1
 #define FAR_SERVO_PIN 2
 
-#define ULTRASONIC_PIN 7
+#define ULTRASONIC_TRIGGER_PIN 7
+#define ULTRASONIC_ECHO_PIN 6
 
 
 ros::NodeHandle nh;
@@ -20,6 +24,9 @@ rl_crawler::distance distance;
 
 Servo nearServo;
 Servo farServo;
+
+NewPing rangeFinder;
+
 
 // Move the servos into the places given by the command message
 void callback(const rl_crawler::command& command_msg)
@@ -33,7 +40,7 @@ void callback(const rl_crawler::command& command_msg)
 	arm2.write(farServoPos);
 }
 
-ros::Publisher distance_pub("distance", &state);
+ros::Publisher distance_pub("distance", &distance);
 ros::Subscriber<rl_crawler::action> command_sub("command", &callback);
 
 void setup()
@@ -47,6 +54,9 @@ void setup()
 	arm1.attach(NEAR_SERVO_PIN);
 	arm2.attach(FAR_SERVO_PIN);
 
+	// setup range finder
+	rangeFinder = NewPing(ULTRASONIC_TRIGGER_PIN, ULTRASONIC_ECHO_PIN);
+
 	// setup arduino serial
 	Serial.begin(10000); // setup communications with computer at a 10 kb/sec bitrate
 	delay(1000);
@@ -56,7 +66,12 @@ void setup()
 void loop()
 {
     nh.spinOnce();
-    delay(100);
+    delay(200);
 
 	// get new distance measurement and publish to distance channel
+	int millisecondsReturnTime = rangeFinder.ping_median(5); // ping 5 times and return the median
+	double cmDistance = rangeFinder.convert_cm(millisecondsReturnTime);
+	distance distanceResult = distance(cmDistance);
+	distance_pub.publish(distanceResult);
+
 }

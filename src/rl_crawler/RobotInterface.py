@@ -95,7 +95,6 @@ class RobotInterface(object):
     # callback for the sensor subscriber, updates the current distance 
     def __updateDistance(self, message):
         self.currentDistance = message
-        # TODO check with James to make sure this works 
 
         if self.distanceInitialized == False:
             self.__lastDistance = self.currentDistance
