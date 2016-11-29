@@ -1,4 +1,8 @@
+/*
 
+	This file (curlbot.cpp) is the firmware that will run on our curlbot and interact with the agent.
+
+*/
 
 
 #include <ros.h>
@@ -8,14 +12,15 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include <libraries/NewPing.h>
+
+#include "NewPing.h"
 
 
-#define NEAR_SERVO_PIN 1
+#define NEAR_SERVO_PIN 3
 #define FAR_SERVO_PIN 2
 
-#define ULTRASONIC_TRIGGER_PIN 7
-#define ULTRASONIC_ECHO_PIN 6
+#define ULTRASONIC_TRIGGER_PIN 12
+#define ULTRASONIC_ECHO_PIN 13
 
 
 ros::NodeHandle nh;
