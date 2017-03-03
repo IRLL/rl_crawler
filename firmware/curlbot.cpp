@@ -6,8 +6,8 @@
 
 
 #include <ros.h>
-#include <rl_crawler/command.h>
-#include <rl_crawler/distance.h>
+#include "rl_crawler/command.h"
+#include "rl_crawler/distance.h"
 
 
 #include <Arduino.h>
@@ -53,29 +53,27 @@ void setup()
 {
 	// setup node
     nh.initNode();
+    nh.getHardware()->setBaud(57600);
     nh.advertise(distance_pub);
     nh.subscribe(command_sub);
 
 	// setup servos
 	nearServo.attach(NEAR_SERVO_PIN);
 	farServo.attach(FAR_SERVO_PIN);
-
-
-	// setup arduino serial
-	Serial.begin(10000); // setup communications with computer at a 10 kb/sec bitrate
-	delay(1000);
-
 }
 
 void loop()
 {
-    nh.spinOnce();
-    delay(200);
 
 	// get new distance measurement and publish to distance channel
-	int millisecondsReturnTime = rangeFinder.ping_median(5); // ping 5 times and return the median
-	double cmDistance = rangeFinder.convert_cm(millisecondsReturnTime);
-	distance.wallDistance = cmDistance;
+	int millisecondsReturnTime = rangeFinder.ping_median(5); // ping 20 times and return the median
+	double msDistance = (double)millisecondsReturnTime;
+	distance.wallDistance = msDistance;
 	distance_pub.publish(&distance);
 
+    nh.spinOnce();
 }
+
+
+
+

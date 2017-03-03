@@ -36,39 +36,59 @@ class State(object):
 
     # get the number of unique states
 	# -1 is infinity
-    def getNumStates():
-        pass
+	@staticmethod
+	def getNumStates():
+		pass
 
     # convert state to ServoState object
     def convertToServoState(self):
         pass
 
 
-class RawState(State):
-    def __init__(self, servoState = ServoState()):
-        self.nearServo = servoState.nearServo
-        self.farServo = servoState.farServo
+class RawState(object):
+	def __init__(self, servoState = ServoState()):
+		self.nearServo = servoState.nearServo
+		self.farServo = servoState.farServo
+	
+	def getStateId(self):
+		weighty = self.nearServo * NUM_SERVO_TICKS
+		light = self.farServo
+		return weighty + light
+
+	def getstatefeatures(self):
+		# todo output state feature list
+		pass
+		
+	@staticmethod
+	def getNumStates():
+		return NUM_SERVO_TICKS * NUM_SERVO_TICKS
+
+	def convertToServoState(self):
+		return ServoState(self.nearServo, self.farServo)
+
+class DoubleState(object):
+    def __init__(self, servoState1 = ServoState(), servoState2 = ServoState()):
+        self.state1 = RawState(servoState1)
+        self.state2 = RawState(servoState2)
 
     def getStateId(self):
-        weighty = self.nearServo * NUM_SERVO_TICKS
-        light = self.farServo
+        multiplier = RawState.getNumStates()
+
+        weighty = self.state1.getStateId * multiplier
+        light = self.state2.getStateId
 
         return weighty + light
-	
-	def getStateFeatures(self):
-		# TODO output state feature list
-		pass
 
+    @staticmethod
     def getNumStates():
-        return NUM_SERVO_TICKS * NUM_SERVO_TICKS
+        multiplier = RawState.getNumStates()
+        return multiplier * multiplier
 
     def convertToServoState(self):
-        return ServoState(self.nearServo, self.farServo)
+        return self.state2.convertToServoState()
+
         
 # TODO add simplified state class (IE one that just has far, middle, or close for each servo
-
-    
-
 
 
 

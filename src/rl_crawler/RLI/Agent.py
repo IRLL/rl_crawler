@@ -1,33 +1,91 @@
 
 """
-	Agent.py
-	
-	Abstract interface for all agents.
-	All agents are derived from agent
+    Agent.py
+    
+    Abstract interface for all agents.
+    All agents are derived from agent
 """
 
-from RLI.RLI import Agent
-from RLI.QValues import TabularQValues as QValues
+import random
+
+from rl_crawler.RLI.QValues import TabularQValues as QValues
+
+
+import Data.State
+import Data.Action
+
+
+class CurlBotAgent(object):
+    # intialize our curl bot agent
+    def __init__(self, arguments = ""):
+        # initialize QValues
+        self.QValues = QValues(0.1)
+        self.explorationRate = 0.1
+        self.learningRate = 0.8
+
+    def saveAgent(self):
+        # save QValues
+        self.QValues.saveQValues("savedQValues")
+
+        # save agent
+        saveFile = open("agentState", 'w')
+
+        saveFile.write(str(self.explorationRate) + "\n")
+        saveFile.write(str(self.learningRate) + "\n")
+
+        saveFile.close()
+
+    def loadAgent(self):
+        # load QValues
+        self.QValues.loadQValues("savedQValues")
+
+        # load agent
+        loadFile = open("agentState", 'r')
+
+        self.explorationRate = float(loadFile.readline())
+        self.learningRate = float(loadFile.readline())
+
+        loadFile.close()
+        
+
+    # set the agent to the first sensation in the trial.
+    def StartTrial(self, sensation):
+        return self.QValues.getPiAction(sensation)
+
+    # take a simulated step in the simulation
+    def Step(self, prevSensation, prevAction, reward, currentSensation):
+
+        # update Q values
+        state = Data.State.RawState(currentSensation)
+        previousState = Data.State.RawState(prevSensation)
+        self.QValues.updateQValue(previousState, prevAction, reward, state, self.learningRate)
+
+        # update learning rate
+        self.learningRate /= 1.00006
+
+        # check for random action
+        randNum = random.random()
+        self.explorationRate -= 0.0002
+        if self.explorationRate < 0.1: self.explorationRate = 0.1
+
+        if randNum < self.explorationRate:
+            # take random action
+            print(self.explorationRate)
+            return Data.Action.SimpleDisplacementAction.getRandomAction(currentSensation)
+        else:
+            # take greedy action
+            action = self.QValues.getPiAction(state)
+            print("learning rate: ", self.learningRate, "  qValue: ", self.QValues._getQValue(state, action.getActionId()))
+            return action
+    
+    # return the greedy action for the current timestep
+    def getAction(self, currentSensation):
+        state = Data.State.RawState(currentSensation)
+        action = self.QValues.getPiAction(state)
+        return action
 
 
 
-class CurlBotAgent(Agent):
-	# intialize our curl bot agent
-	def __init__(self, arguments = ""):
-		# initialize QValues
-		self.QValues = QValues()
+       
 
-	# set the agent to the first sensation in the trial.
-	@classmethod
-	def StartTrial(self, sensation):
-		return self.QValues.getPiAction(sensation);
-
-	# take a simulated step in the simulation
-	@classmethod
-	def Step(self, prevSensation, prevAction, reward, currentSensation):
-		# update Q values
-		self.QValues.updateQValues(prevSensation, prevAction, reward, currentSensation);
-
-		# return desired action
-		return self.QValues.getPiAction(currentSensation);
 

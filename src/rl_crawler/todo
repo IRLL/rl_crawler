@@ -1,0 +1,6 @@
+
+
+switch qvalues from array to dictionary
+Add at least one history value to each state
+Remove states that allow the robot to not move (Maybe switch to just the 4 states either moving up or down one arm.)
+

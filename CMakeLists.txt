@@ -139,4 +139,7 @@ TOOLCHAIN_FILE ${ROSSERIAL_ARDUINO_TOOLCHAIN}
 
 rosserial_add_client_target(firmware curlbot ALL)
 rosserial_add_client_target(firmware curlbot-upload)
-
+rosserial_add_client_target(firmware movementTest ALL)
+rosserial_add_client_target(firmware movementTest-upload)
+rosserial_add_client_target(firmware chatter ALL)
+rosserial_add_client_target(firmware chatter-upload)

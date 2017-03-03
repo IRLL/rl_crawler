@@ -1,7 +1,23 @@
-import RLI.RLI
+#!/usr/bin/env python
 
-from RLI.Agent import CurlBotAgent
+from rl_crawler.RLI.Agent import CurlBotAgent
+
+from rl_crawler.RLI.Simulation import Simulation
+
+import rospy
+
+
+
+rospy.init_node('rl_crawler')
+
 
 print("We are doing something guys!")
 
-agent = CurlBotAgent()
+simulation = Simulation()
+
+simulation.Trials(300, 10000000)
+
+
+
+
+
