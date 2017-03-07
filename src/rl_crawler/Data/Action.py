@@ -11,7 +11,6 @@
 import random
 
 from State import ServoState
-
 import State
 
 
@@ -40,7 +39,7 @@ class Action(object):
 
 # action representing a short distance displacement change
 class SimpleDisplacementAction(object):
-    DISPLACEMENT = 10
+    DISPLACEMENT = 20
 
     def __init__(self, rawState=ServoState()):
         self.rawState = rawState
@@ -91,6 +90,35 @@ class SimpleDisplacementAction(object):
         state.farServo += self.farServo * self.DISPLACEMENT
 
         return state
+
+
+"""
+class SingleMovementAction(object):
+    DISPLACEMENT = 20
+
+    def __init__(self, rawState=SevoState()):
+        pass
+
+    def getActionId(self):
+        pass
+
+    @classmethod
+    def IdToAction(self, Id, servoState):
+        pass
+
+    @classmethod
+    def getRandomAction(self, state):
+        pass
+
+    @classmethod
+    def getNumActions(self):
+        return 4
+
+    def convertToServoState(self):
+        pass
+
+"""
+
 
 # TODO add simplified action class (IE one that just moves each servo to far, middle, or close for each servo)
 

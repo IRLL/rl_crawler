@@ -10,6 +10,9 @@ import os
 import Agent
 import Environment
 
+import Data.Action
+import Data.State
+
 
 # setup terminal nonblocking
 fd = sys.stdin.fileno()
@@ -47,11 +50,9 @@ class Simulation(object):
         self.currentTrackingReward = 0
         self.needsReset = False
 
-
         # reload results from the previous session and keep writing
         self.trainingResultsFile = open('results', 'a')
         self.resultsFile = open('../results.txt', 'w')
-
 
 
     # starts the beginning of a new trial.
@@ -67,7 +68,16 @@ class Simulation(object):
                     break
                 except IOError: pass
 
-        self.currentState = self.environment.StartTrial()
+        # set up first servo state
+        self.ss1 = self.environment.StartTrial()
+
+        # take default action to get second servo state
+        firstAction = Data.Action.SimpleDisplacementAction(self.ss1)
+        stepResult, _, _ = self.environment.Step(firstAction)
+        self.ss2 = stepResult.sensation;
+
+        # set up initial training conditions
+        self.currentState = Data.State.DoubleState(self.ss1, self.ss2)
         self.currentAction = self.agent.StartTrial(self.currentState)
 
 
@@ -83,13 +93,18 @@ class Simulation(object):
             except IOError: pass
 
             # push back action and state information
+            self.ss0 = self.ss1
+            self.ss1 = self.ss2
+
             self.prevState = self.currentState
             self.prevAction = self.currentAction
 
             # get new state and reward information
             environmentStepResult, isTerminal, self.needsReset = self.environment.Step(self.prevAction)
-            self.currentState = environmentStepResult.sensation
             self.currentReward = environmentStepResult.reward
+
+            self.ss2 = environmentStepResult.sensation
+            self.currentState = Data.State.DoubleState(self.ss1, self.ss2)
 
             # update agent and get new action information
             if trainingMode == True:

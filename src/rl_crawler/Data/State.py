@@ -74,8 +74,8 @@ class DoubleState(object):
     def getStateId(self):
         multiplier = RawState.getNumStates()
 
-        weighty = self.state1.getStateId * multiplier
-        light = self.state2.getStateId
+        weighty = self.state1.getStateId() * multiplier
+        light = self.state2.getStateId()
 
         return weighty + light
 

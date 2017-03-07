@@ -46,9 +46,8 @@ class CurlBotEnvironment(object):
         # reset the robot
         self.robot.reInitialize()
         robotState, _, _ = self.robot.getCurrentState()
-        startingState = Data.State.RawState(robotState)
 
-        return startingState
+        return robotState
     
     """
         performs a single step of the environment simulation.
@@ -69,7 +68,7 @@ class CurlBotEnvironment(object):
         nextState, isTerminal, needsReset = self.robot.getCurrentState()
         nextReward = self.robot.getNextReward()
 
-        stepResult= CurlBotEnvironment.StepResult(nextReward, nextState)
+        stepResult = CurlBotEnvironment.StepResult(nextReward, nextState)
 
         return stepResult, isTerminal, needsReset
 

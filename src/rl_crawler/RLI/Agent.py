@@ -8,7 +8,7 @@
 
 import random
 
-from rl_crawler.RLI.QValues import TabularQValues as QValues
+from rl_crawler.RLI.QValues import DictionaryQValues as QValues
 
 
 import Data.State
@@ -22,6 +22,7 @@ class CurlBotAgent(object):
         self.QValues = QValues(0.1)
         self.explorationRate = 0.1
         self.learningRate = 0.8
+        self.gamma = 0.9
 
     def saveAgent(self):
         # save QValues
@@ -53,15 +54,13 @@ class CurlBotAgent(object):
         return self.QValues.getPiAction(sensation)
 
     # take a simulated step in the simulation
-    def Step(self, prevSensation, prevAction, reward, currentSensation):
+    def Step(self, prevState, prevAction, reward, currentState):
 
         # update Q values
-        state = Data.State.RawState(currentSensation)
-        previousState = Data.State.RawState(prevSensation)
-        self.QValues.updateQValue(previousState, prevAction, reward, state, self.learningRate)
+        self.QValues.updateQValue(prevState, prevAction, reward, currentState, self.learningRate, self.gamma)
 
         # update learning rate
-        self.learningRate /= 1.00006
+        self.learningRate /= 1.00003
 
         # check for random action
         randNum = random.random()
@@ -71,11 +70,11 @@ class CurlBotAgent(object):
         if randNum < self.explorationRate:
             # take random action
             print(self.explorationRate)
-            return Data.Action.SimpleDisplacementAction.getRandomAction(currentSensation)
+            return Data.Action.SimpleDisplacementAction.getRandomAction(currentState.convertToServoState())
         else:
             # take greedy action
-            action = self.QValues.getPiAction(state)
-            print("learning rate: ", self.learningRate, "  qValue: ", self.QValues._getQValue(state, action.getActionId()))
+            action = self.QValues.getPiAction(currentState)
+            print("learning rate: ", self.learningRate, "  qValue: ", self.QValues._getQValue(currentState, action))
             return action
     
     # return the greedy action for the current timestep

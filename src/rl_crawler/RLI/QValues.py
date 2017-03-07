@@ -6,7 +6,7 @@
 
 import random
 
-from Data.State import RawState as State
+from Data.State import DoubleState as State
 from Data.Action import SimpleDisplacementAction as Action
 
 # Abstract QValues class
@@ -107,7 +107,6 @@ class TabularQValues(QValues):
 class DictionaryQValues(QValues):
     def __init__(self, initValue=0):
         self.initValue = initValue
-
         self.qValues = dict()
 
 
@@ -117,10 +116,9 @@ class DictionaryQValues(QValues):
         _, maxValue = self._getMaxActionValue(rState)
 
         # get previous q
-        previousQ = self._getQValue(state, action.getActionId())
+        previousQ = self._getQValue(state, action)
 
-        self._setQValue(state, action, (1 - alpha)*previousQ + alpha * (reward + gamma*maxValue))
-
+        self._setQValue(state, action, (1-alpha) * previousQ + alpha * (reward + gamma*maxValue))
 
     # retrieve the action to take given the current state
     def getPiAction(self, state):
@@ -129,23 +127,64 @@ class DictionaryQValues(QValues):
         return maxAction
 
     def saveQValues(self, filepath):
-        pass
+        # open the fiel for write
+        savefile = open(filepath, 'w')
+
+        # save key, value pairs from the dictionary
+        for key, value in self.qValues.iteritems():
+            if key in self.qValues:
+                savefile.write(str(key) + "," + str(value) + "\n")
+
+        savefile.close()
 
     def loadQValues(self, filepath):
-        pass
+        with open(filepath, 'r') as loadfile:
+            self.qValues = dict()
+
+            for line in loadfile:
+                if line != '\n':
+                    # split the line into key and value
+                    split = line.split(',', 2)
+                    key = float(split[0])
+                    value = float(split[1])
+
+                    # load into our qValues
+                    self.qValues[key] = value
 
     # finds the maximum value action and returns its value and the action itself
     def _getMaxActionValue(self, state):
-        pass
+        maxActionId = 0
+        idAction = Action.IdToAction(maxActionId, state)
+        maxValue = self._getQValue(state, idAction)
+        
+        for i in range(1, Action.getNumActions()):
+            idAction = Action.IdToAction(i, state)
+            currentValue = self._getQValue(state, idAction)
 
+            if currentValue > maxValue:
+                maxValue = currentValue
+                maxActionId = i
+
+        return maxActionId, maxValue
 
     def _getQValue(self, state, action):
-        stateID = state.getStateId()
-        actionID = action.getActionId()
-        return self.qValues[stateID][actionId]
+        qValueId = self._getQValueId(state, action)
+
+        if qValueId in self.qValues:
+            return self.qValues[qValueId]
+        else:
+            return self.initValue
 
     def _setQValue(self, state, action, value):
-        stateID = state.getStateId()
-        actionID = action.getActionId()
+        qValueId = self._getQValueId(state, action)
+        self.qValues[qValueId] = value
 
-        self.qValues[stateID][actionID] = value
+    def _getQValueId(self, state, action):
+        stateId = state.getStateId()
+        actionId = action.getActionId()
+        qValueId = stateId * action.getNumActions() + actionId
+        return qValueId
+
+
+
+
