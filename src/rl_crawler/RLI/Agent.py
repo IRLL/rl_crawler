@@ -60,7 +60,7 @@ class CurlBotAgent(object):
         self.QValues.updateQValue(prevState, prevAction, reward, currentState, self.learningRate, self.gamma)
 
         # update learning rate
-        self.learningRate /= 1.00003
+        self.learningRate /= 1.0003
 
         # check for random action
         randNum = random.random()

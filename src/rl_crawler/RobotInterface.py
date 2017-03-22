@@ -88,8 +88,6 @@ class RobotInterface(object):
             
             self.reward_publisher.publish(rewardMessage)
 
-            # end the episode when we get a good stroke
-            self.__isTerminal = True
             return deltaDistance
         else:
             return -1
